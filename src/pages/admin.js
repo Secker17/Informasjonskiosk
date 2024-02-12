@@ -10,20 +10,21 @@ import '../admin.css'; // Adjust this path to your actual CSS file
 const AdminPanel = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState(''); // State for the username
   const [welcomeMessage, setWelcomeMessage] = useState(''); // State for the welcome message
   const [userRole, setUserRole] = useState('');
 
-  // Authentication state and user role verification
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setIsLoggedIn(true);
         try {
-          const docRef = doc(firestore, 'users', user.uid); // Ensure this path matches your Firestore users collection
+          const docRef = doc(firestore, 'users', user.uid);
           const docSnap = await getDoc(docRef);
-
+  
           if (docSnap.exists() && docSnap.data().role === 'admin') {
             setUserRole(docSnap.data().role);
+            setUsername(docSnap.data().name); // Her setter du brukernavnet fra Firestore
           } else {
             console.log("No such document or not an admin!");
             navigate('/login'); // Redirect if not admin
@@ -35,9 +36,10 @@ const AdminPanel = () => {
         navigate('/login');
       }
     });
-
+  
     return () => unsubscribe();
   }, [navigate]);
+  
 
   // Fetching editable content for the admin to edit
   useEffect(() => {
@@ -81,6 +83,7 @@ const AdminPanel = () => {
   const handleLogout = () => {
     auth.signOut().then(() => {
       setIsLoggedIn(false);
+      setUsername(''); // Clear username on logout
       navigate('/login');
     }).catch((error) => {
       console.error('Logout Error:', error);
@@ -101,6 +104,7 @@ const AdminPanel = () => {
     <div className="dashboard-container">
       <aside className="sidebar">
         <h1>SECKER ADMIN</h1>
+        <p>Welcome, {username}!</p> {/* Display the username here */}
         <nav className="menu">
           <a href="#">Dashboard</a>
           <a href="#" className="active">Edit Home</a>
@@ -114,7 +118,7 @@ const AdminPanel = () => {
         </header>
 
         <div>
-          <h2>Edit Home Page Content</h2>
+          <h2>Edit Welcome</h2>
           <div>
             <label htmlFor="welcomeMessage">Welcome Message:</label>
             <textarea id="welcomeMessage" value={welcomeMessage} onChange={handleWelcomeMessageChange}></textarea>
@@ -123,7 +127,7 @@ const AdminPanel = () => {
         </div>
         
         <footer className="footer">
-          <p>Copyright © Your Website 2022</p>
+          <p>Copyright © Secker Consulting 2023</p>
         </footer>
       </main>
     </div>

@@ -3,6 +3,7 @@ import './App.css';
 import Home from "./pages/Home";
 import Login from './pages/login';
 import AdminPanel from './pages/admin';
+import SignUp from './pages/signup';
 
 
 const App = () => {
@@ -12,6 +13,7 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<AdminPanel />} />
+        <Route path="/signup" element={<SignUp />} />
 
       </Routes>
     </Router>

@@ -74,7 +74,8 @@
   border-collapse: collapse;
 }
 
-.data-table th, .data-table td {
+.data-table th,
+.data-table td {
   text-align: left;
   padding: 10px;
   border-bottom: 1px solid #ddd;
@@ -104,4 +105,10 @@
   position: absolute;
   bottom: 0;
   width: calc(100% - 250px);
+}
+
+p {
+  display: block;
+  color: #ecf0f1;
+  margin-left: 30px;
 }
