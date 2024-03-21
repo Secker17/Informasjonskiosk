@@ -36,23 +36,26 @@
     transform: rotate(360deg);
   }
 }
-
-.button {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+.button-container {
+  position: fixed; /* Plasserer knappene relativt til viewport */
+  bottom: 20px; /* Avstand fra bunnen */
+  right: 20px; /* Avstand fra høyre side */
+  display: flex; /* For å plassere knappene ved siden av hverandre */
+  gap: 10px; /* Legger til litt plass mellom knappene */
 }
 
-.button:hover {
-  background-color: #0056b3;
+/* Tilpass knappe-styling etter behov */
+.btn-outline-primary, .btn-outline-success {
+  padding: 10px 20px; /* Øker padding for en større knapp */
+  font-weight: bold; /* Gjør teksten fet */
+  transition: all 0.2s ease-in-out; /* Glatt overgang for hover-effekter */
 }
+
+.btn-outline-primary:hover, .btn-outline-success:hover {
+  transform: scale(1.1); /* Forstørrer knappene litt ved hover */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Legger til skyggeeffekt for dybde */
+}
+
 
 iframe {
   margin-top: 31%; /* Øker toppmargen for å flytte klokken nedover */
@@ -69,4 +72,26 @@ iframe:hover {
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* Skyggeeffekt */
 }
 
+.large-image-container {
+  position: absolute;
+  top: 50%;
+  left: 10%; /* Adjust as necessary to position the image on the left */
+  transform: translateY(-50%);
+  width: 20%; /* Adjust based on desired image size */
+  height: auto;
+  z-index: -1; /* Ensure it doesn't overlap interactive elements */
+}
+
+.large-image {
+  width: 100%;
+  height: auto;
+  border-radius: 10px; /* Optional, for rounded corners */
+  transition: transform 0.3s ease-in-out; /* Smooth transition for hover effects */
+  transition: opacity 2s ease-in-out; /* Jevn overgang for opacity */
+
+}
+
+.large-image:hover {
+  transform: scale(1.05); /* Slightly enlarge image on hover */
+}
 

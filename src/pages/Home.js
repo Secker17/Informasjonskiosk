@@ -10,6 +10,17 @@ const Home = () => {
   const [time, setTime] = useState('');
   const [weatherForecast, setWeatherForecast] = useState('Værprognose...');
   const [welcomeMessage, setWelcomeMessage] = useState('Velkommen'); // Default message
+  const [currentImage, setCurrentImage] = useState('mo.png');
+  const images = ['mo.png', 'per.JPG'];
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentImage((current) => (current === images[0] ? images[1] : images[0]));
+    }, 5000); // Bytt bilde hvert 5. sekund
+
+    return () => clearInterval(intervalId); // Rens opp intervallet når komponenten avmonteres
+  }, []);
+
 
   const welcomesub = onSnapshot (doc(firestore, "content", "homePage"), doc => {
     setWelcomeMessage (doc.data().welcomeMessage)
@@ -111,8 +122,10 @@ const Home = () => {
   }, []);
 
   return (
-    <div className='App'>
-    
+<div className='App'>
+      <div className="large-image-container">
+        <img src={currentImage} alt="Descriptive Alt Text" className="large-image"/>
+      </div>
       <div className="footer-text">Secker design</div>
       <div className="box-left">
         <div className="box-left-text">{weatherEmoji}</div>
@@ -125,9 +138,12 @@ const Home = () => {
       <div className="forecast-box">
         <div className="forecast-text" dangerouslySetInnerHTML={{ __html: weatherForecast }}></div>
       </div>
-      <div className="button">
+      <div className="button-container">
         <Link to='/login'>
-          <Button variant="primary">Login</Button>
+          <Button variant="outline-primary">Login</Button>
+        </Link>
+        <Link to='/signup'>
+          <Button variant="outline-success">Sign In</Button>
         </Link>
       </div>
     </div>
