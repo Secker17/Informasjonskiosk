@@ -1,38 +1,65 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
-import { firestore } from '../firebase'; // Adjust this path to your actual firebase.js path
-import { doc, getDoc, onSnapshot } from 'firebase/firestore';
-import '../App.css'; // Adjust this path to your actual CSS file
+import { firestore } from '../firebase'; // Ensure this path is correct for your project setup
+import { doc, onSnapshot } from 'firebase/firestore';
+import '../App.css'; // Ensure this path is correct for your project setup
 
 const Home = () => {
   const [weatherEmoji, setWeatherEmoji] = useState('☀️');
   const [time, setTime] = useState('');
   const [weatherForecast, setWeatherForecast] = useState('Værprognose...');
-  const [welcomeMessage, setWelcomeMessage] = useState('Velkommen'); // Default message
-  const [currentImage, setCurrentImage] = useState('mo.png');
-  const images = ['mo.png', 'per.JPG'];
+  const [welcomeMessage, setWelcomeMessage] = useState('Velkommen');
+  const [currentImage, setCurrentImage] = useState('');
+  const [images, setImages] = useState([]);
 
+  // Update the clock every second
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      setCurrentImage((current) => (current === images[0] ? images[1] : images[0]));
-    }, 5000); // Bytt bilde hvert 5. sekund
+    const updateClock = () => {
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      setTime(`${hours}:${minutes}`);
+    };
 
-    return () => clearInterval(intervalId); // Rens opp intervallet når komponenten avmonteres
+    const intervalId = setInterval(updateClock, 1000);
+    updateClock(); // Initialize the clock immediately
+
+    return () => clearInterval(intervalId); // Clean up on component unmount
   }, []);
 
+  // Listen for changes to the homePage document in Firestore
+  useEffect(() => {
+    const unsubscribe = onSnapshot(doc(firestore, "content", "homePage"), (doc) => {
+      if (doc.exists()) {
+        const data = doc.data();
+        setWelcomeMessage(data.welcomeMessage);
+        setImages(data.images || []);
+        setCurrentImage(data.images[0] || ''); // Set to the first image by default
+      } else {
+        console.log("No such document!");
+      }
+    });
 
-  const welcomesub = onSnapshot (doc(firestore, "content", "homePage"), doc => {
-    setWelcomeMessage (doc.data().welcomeMessage)
-  })
+    return () => unsubscribe(); // Clean up on component unmount
+  }, []);
 
-  // Function to update the clock
-  const updateClock = () => {
-    const now = new Date();
-    let hours = now.getHours().toString().padStart(2, '0');
-    let minutes = now.getMinutes().toString().padStart(2, '0');
-    setTime(`${hours}:${minutes}`);
-  };
+  // Cycle through the images every 5 seconds
+  useEffect(() => {
+    if (images.length > 1) {
+      const intervalId = setInterval(() => {
+        setCurrentImage((current) => {
+          const currentIndex = images.indexOf(current);
+          const nextIndex = (currentIndex + 1) % images.length;
+          return images[nextIndex];
+        });
+      }, 5000);
+
+      return () => clearInterval(intervalId); // Clean up on component unmount
+    }
+  }, [images]);
+
+  
 
   // Function to fetch current weather and update the emoji
   const updateWeatherEmoji = async () => {
@@ -96,35 +123,15 @@ const Home = () => {
     }
   };
 
-  // Fetch editable content from Firestore
   useEffect(() => {
-    const fetchEditableContent = async () => {
-      try {
-        const docRef = doc(firestore, 'editableContent', 'homePage');
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          setWelcomeMessage(docSnap.data().welcomeMessage); 
-        } else {
-          console.log("No editable content document found!");
-        }
-      } catch (error) {
-        console.error("Error fetching editable content:", error);
-      }
-    };
-
-    fetchEditableContent();
-    updateWeatherEmoji();
-    updateWeatherForecast();
-    const clockInterval = setInterval(updateClock, 1000);
-
-    return () => clearInterval(clockInterval); // Clean up interval on component unmount
+    updateWeatherEmoji(); // Call it to initialize the emoji
+    updateWeatherForecast(); // Call it to initialize the forecast
   }, []);
-
+ 
   return (
-<div className='App'>
+    <div className='App'>
       <div className="large-image-container">
-        <img src={currentImage} alt="Descriptive Alt Text" className="large-image"/>
+        <img src={currentImage} alt="Current Display" className="large-image"/>
       </div>
       <div className="footer-text">Secker design</div>
       <div className="box-left">
@@ -132,7 +139,7 @@ const Home = () => {
         <div className="additional-text">Asker</div>
       </div>
       <div className="box">
-        <div className="box-text">{time || 'Laster...'}</div>
+        <div className="box-text">{time || 'Loading...'}</div>
       </div>
       <div className="welcome">{welcomeMessage}</div>
       <div className="forecast-box">
@@ -143,7 +150,7 @@ const Home = () => {
           <Button variant="outline-primary">Login</Button>
         </Link>
         <Link to='/signup'>
-          <Button variant="outline-success">Sign In</Button>
+          <Button variant="outline-success">Sign Up</Button>
         </Link>
       </div>
     </div>
