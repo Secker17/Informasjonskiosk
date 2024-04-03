@@ -1,19 +1,30 @@
 /* General layout and typography */
 main {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f0f0f0; /* Light gray background */
-  }
-  
-  section {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-  }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full viewport height */
+  width: 100vw; /* Full viewport width */
+  background-color: #f0f0f0; /* Light gray background */
+  margin: 0; /* Reset margin to remove default browser margin */
+}
+
+section {
+  display: flex; /* Using flex to center the content inside section */
+  justify-content: center; /* Centering content horizontally */
+  align-items: center; /* Centering content vertically */
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 30vw; /* Full viewport width */
+  height: 30vh; /* Full viewport height */
+  margin: 0 auto; /* Ensuring there is no margin */
+}
+
+/* Add the rest of your styles here */
+
   
   p {
     color: #333; /* Dark gray text */
